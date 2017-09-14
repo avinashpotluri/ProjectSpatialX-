@@ -1,6 +1,5 @@
 package Sequential;
 
-import EMSpatialJoin.*;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
@@ -14,9 +13,9 @@ public class RectangleMapperSeqForAB extends Mapper<LongWritable, Text,LongWrita
            //   System.out.println("Map" + value.toString());
     String words[] = value.toString().split(",");
     String[] subWords = words[0].split("\\s+");
-    
     int abType=1;
     int JoinType=0;
+   
     JoinType =Integer.parseInt(subWords[subWords.length-1]);
     int rowNum1 = Integer.parseInt(words[1]);
     int relationIndex1 = Integer.parseInt(words[2]);
@@ -31,16 +30,15 @@ public class RectangleMapperSeqForAB extends Mapper<LongWritable, Text,LongWrita
     double y21 = Double.parseDouble(words[10]);
     double x22 = Double.parseDouble(words[11]);
     double y22 = Double.parseDouble(words[12]);
+  //  System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+   // System.out.println(x11 +","+ y11+","+x12+","+y12+"\t"+x21+","+y21+","+x22+","+y22);
 	//Rectangle R2 = new Rectangle(rowNum2, relationIndex2,x21,y21,x22,y22);
 	ABJoinTuple jointuple = new ABJoinTuple(abType,JoinType,rowNum1,relationIndex1,x11,y11,x12,y12,rowNum2,relationIndex2,x21,y21,x22,y22);		 
         Configuration conf = context.getConfiguration();   
         int max = conf.getInt("gridMax",0);
-        //  System.out.println("max is--:"+max);
         int numOfReducersPerRow = conf.getInt("p1NumOfReducersPerRow", 0);
-        // System.out.println("numOfReducers:--"+numOfReducersPerRow);
         double cellWidth =  (double) max / numOfReducersPerRow;
         double cellHeight =  (double) max / numOfReducersPerRow;
-        
         double[] x = {x21,x22};
         double[] y = {y21,y22};
         int relation = 0;
@@ -55,7 +53,7 @@ public class RectangleMapperSeqForAB extends Mapper<LongWritable, Text,LongWrita
         for (int j = y1; j <= y2; j++) {
             for (int i = x1; i <= x2; i++) {
                 int mapkey = ((i * numOfReducersPerRow) + j);
-             //   System.out.println("Mapper2 Reducer " + mapkey + " " + i + " " + j + " " + r.toString());
+     //           System.out.println("MapperAB------> " + mapkey + " \t" + jointuple);
                 context.write(new LongWritable(mapkey), jointuple);
             }
         }

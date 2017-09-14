@@ -1,6 +1,5 @@
 package Sequential;
 
-import EMSpatialJoin.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -26,7 +25,7 @@ public class SpatialJoinDriverSeq
             conf.setInt("p1NumOfReducers", p1NumOfReducers);
             conf.setDouble("cellWidth", cellWidth);
             Job job = Job.getInstance(conf, "Join");
-	    job.setNumReduceTasks(1);
+	    job.setNumReduceTasks(25);
             
 	    job.setJarByClass(SpatialJoinDriverSeq.class);
             
@@ -48,14 +47,14 @@ public class SpatialJoinDriverSeq
         if (success) {
           //  Configuration conf2 = new Configuration();
         	Job job1 = new Job(conf);
-                job1.setNumReduceTasks(1);
+                job1.setNumReduceTasks(25);
                 job1.setJarByClass(SpatialJoinDriverSeq.class);
                 conf.set("ACount", "6");
         	conf.set("BCount", "6");
         	conf.set("CCount", "6");
         	conf.set("DCount", "6");
             
-            MultipleInputs.addInputPath(job1, new Path("hdfs://localhost:9000/"+args[2]),
+            MultipleInputs.addInputPath(job1, new Path("hdfs://172.27.35.76:9000/"+args[2]),
                 TextInputFormat.class, RectangleMapperSeqForAB.class);
             MultipleInputs.addInputPath(job1, new Path(args[3]),
                TextInputFormat.class, RectangleMapperSeqForC.class);
@@ -75,10 +74,10 @@ public class SpatialJoinDriverSeq
           if (success1) {
           //  Configuration conf2 = new Configuration();
         	Job job2 = new Job(conf);
-                job2.setNumReduceTasks(1);
+                job2.setNumReduceTasks(25);
                 job2.setJarByClass(SpatialJoinDriverSeq.class);
             
-            MultipleInputs.addInputPath(job2, new Path("hdfs://localhost:9000/"+args[4]),
+            MultipleInputs.addInputPath(job2, new Path("hdfs://172.27.35.76:9000/"+args[4]),
                 TextInputFormat.class, RectangleMapperSeqForABC.class);
             MultipleInputs.addInputPath(job2, new Path(args[5]),
                TextInputFormat.class, RectangleMapperSeqForD.class);
@@ -92,23 +91,19 @@ public class SpatialJoinDriverSeq
 	    job2.setOutputValueClass(Text.class);
             FileOutputFormat.setOutputPath(job2, new Path(args[6]));
             
-            boolean success2 = job2.waitForCompletion(true);
+            success1 = job2.waitForCompletion(true);
             //boolean success2 = job.waitForCompletion(true);
-        if (success2) {
+   /*     if (success2) {
         	Job job3 = new Job(conf);
         	job3.setJarByClass(SpatialJoinDriverSeq.class);
             
-            MultipleInputs.addInputPath(job3, new Path("hdfs://localhost:9000/"+args[6]),
-                TextInputFormat.class, RectangleMapperSeqForABCD.class);
-            MultipleInputs.addInputPath(job3, new Path(args[5]),
-               TextInputFormat.class, RectangleMapperForAddingD.class);    
-                
+            FileInputFormat.addInputPath(job3, new Path("hdfs://localhost:9000/"+args[6]));
             FileOutputFormat.setOutputPath(job3, new Path(args[7]));
             //Job job1 = Job.getInstance(conf, "JOB_1");
             job3.setMapperClass(RectangleMapperSeqForABCD.class);
             job3.setReducerClass(RectangleReducerSeqABCD.class);
             
-            job3.setNumReduceTasks(1);
+            job3.setNumReduceTasks(5);
             
             job3.setMapOutputKeyClass(LongWritable.class);
             job3.setMapOutputValueClass(ABCDJoinTuple.class);
@@ -116,11 +111,10 @@ public class SpatialJoinDriverSeq
             job3.setOutputValueClass(ABCDJoinTuple.class);
             //boolean success2= job3.waitForCompletion(true);
        
-	    success = job3.waitForCompletion(true);
+	    success2 = job3.waitForCompletion(true);*/
      //   }
      }
      //  return success?0:1;	  
     }
  }
-}
 }

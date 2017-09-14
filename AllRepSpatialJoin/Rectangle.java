@@ -1,11 +1,12 @@
-package Sequential;
+package AllRepSpatialJoin;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import org.apache.hadoop.io.Writable;
 
-public class RectangleSeq  implements Writable, Comparable<RectangleSeq>{
+public class Rectangle  implements Writable, Comparable<Rectangle>{
+	
 	// Coordinates of the rectangle
 	double x1,y1,x2,y2;
 	int relationIndex;
@@ -13,10 +14,10 @@ public class RectangleSeq  implements Writable, Comparable<RectangleSeq>{
 	/**
 	 * Used in sorting the data in the reducer
 	 */
-	public RectangleSeq() {
+	public Rectangle() {
 		
 	}
-	public RectangleSeq(int rowNum, int relIndex,double x1, double y1, double x2,double y2) {
+	public Rectangle(int rowNum, int relIndex,double x1, double y1, double x2,double y2) {
 		this.rowNum = rowNum;
 		this.relationIndex=relIndex;
 		this.x1= x1;
@@ -24,7 +25,7 @@ public class RectangleSeq  implements Writable, Comparable<RectangleSeq>{
 		this.x2 = x2;
 		this.y2 = y2;
 	}
-	public RectangleSeq(RectangleSeq r) {
+	public Rectangle(Rectangle r) {
 		this.rowNum = r.rowNum;
 		this.relationIndex = r.relationIndex;
 		this.x1 = r.x1;
@@ -33,7 +34,7 @@ public class RectangleSeq  implements Writable, Comparable<RectangleSeq>{
 		this.y2 = r.y2;
 	}
 	@Override
-	public int compareTo(RectangleSeq arg0) {
+	public int compareTo(Rectangle arg0) {
 		// TODO Auto-generated method stub
 		if(relationIndex<arg0.relationIndex)
 			return -1;

@@ -1,115 +1,96 @@
 package Sequential;
 
-import EMSpatialJoin.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.apache.hadoop.conf.Configuration;
-
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-public class RectangleReducerSeqCD extends Reducer<LongWritable, ABCJoinTuple, LongWritable, Text> {
-
-    public void reduce(LongWritable key, Iterable<ABCJoinTuple> values, Context context) throws IOException, InterruptedException {
+public class RectangleReducerSeqCD extends Reducer<LongWritable, ABCJoinTuple, LongWritable, Text> 
+{
+    public void reduce(LongWritable key, Iterable<ABCJoinTuple> values, Context context) throws IOException, InterruptedException 
+    {
         ArrayList<ABCJoinTuple> lc = new ArrayList<>();
         ArrayList<ABCJoinTuple> ld = new ArrayList<>();
-     //   ArrayList<RectangleSeq> lc = new ArrayList<>();
-     //   ArrayList<RectangleSeq> ld = new ArrayList<>();
-       // int i, j;
+        
         Configuration conf = context.getConfiguration();
+        
         double cellWidth = conf.getDouble("cellWidth", 0.0);
-            //System.out.println("cellWidth--:  "+cellWidth);
         int cellsPerRow = conf.getInt("p1NumOfReducersPerRow",0);
-            //System.out.println("cellsPerRow--:  "+cellsPerRow);
         int cellNumber =(int) key.get();
-            //System.out.println("cellNumber:"+cellNumber);
         int cellRow = cellNumber/cellsPerRow;
-            //System.out.println("cellRow--:  "+cellRow);
         int cellCol = cellNumber%cellsPerRow;
-            //System.out.println("cellCol:  "+cellCol);
-            //System.out.println("cellRect = (0,0,cellCol * cellWidth,cellRow * cellWidth,(cellCol+1) * cellWidth,(cellRow +1) * cellWidth)\n"
-                           //        +"-->cellCol * cellWidth--:"+cellCol+ "*" +cellWidth+"="+cellCol * cellWidth 
-                           //        +"\n-->cellRow * cellWidth--:"+cellRow+ "*" +cellWidth+"="+ cellRow * cellWidth 
-                           //        +"\n-->(cellCol+1) * cellWidth--:"+ cellCol+"+" + 1 + "*"+ cellWidth+"="+(cellCol+1) * cellWidth 
-                           //        +"\n-->(cellRow +1) * cellWidth)--:"+ cellRow+"+" + 1 + "*"+ cellWidth+"="+(cellRow +1) * cellWidth);
         RectangleSeq cellRect = new RectangleSeq(0,0,cellCol * cellWidth,cellRow * cellWidth,
                                                 (cellCol+1) * cellWidth,(cellRow +1) * cellWidth);
-            
+     //   System.out.println("Reducer got ");
         
-        System.out.println("Reducer got ");
-        
-        for (ABCJoinTuple t : values) {
+        for (ABCJoinTuple t : values) 
+        {
             ABCJoinTuple newt = new ABCJoinTuple(t);
-            if(t.abcType==1){
-                if (t.r3RelationIndex == 3) {
-                    System.out.println("Reducer CD");
-                    System.out.println("abcType==1");
-                    System.out.println("if (t.r3RelationIndex == 3)"+t.r3RelationIndex+","+t.r1x1+","+t.r2x1+","+t.r3x1);
-                lc.add(newt);
-                }else {
-                        }
+    //        System.out.println("ReducerBC----->>"+"\t"+ newt);
+    //        System.out.println(t.r1RelationIndex+","+t.r2RelationIndex +","+t.r3RelationIndex);
+            if(t.abcType==1)
+            {
+                if (t.r3RelationIndex == 3) 
+                {
+      //              System.out.println("frm mapper ABC in RED CD^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"+"\t"+newt );
+                    lc.add(newt);
+                }
             }
-            else if(t.abcType==2){
-                    if (t.r1RelationIndex == 4) {
-                        System.out.println("Reducer CD");
-                        System.out.println("abcType==2");
-                    System.out.println("if (t.r1RelationIndex == 4)"+t.r1RelationIndex+","+newt);
+            else if(t.abcType==2)
+            {
+                if (t.r1RelationIndex == 4) 
+                {
                     ld.add(newt);
-                    }else {
-                            }
-            }
+      //              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+"\t"+newt );
+                } 
+            }else 
+                {
+                }
         }
-        
-        
         join(cellNumber,lc, ld, 3, cellRect,context);
-        
     }
-
     public void join(int CellNumber,ArrayList<ABCJoinTuple> lc, ArrayList<ABCJoinTuple> ld, int joinType, RectangleSeq cellRect,
-                                    Context context) throws IOException, InterruptedException {
-        for (int i = 0; i < lc.size(); i++) {
+                                    Context context) throws IOException, InterruptedException 
+    {
+        for (int i = 0; i < lc.size(); i++) 
+        {
             ABCJoinTuple r2 = lc.get(i);
-            for (int j = 0; j < ld.size(); j++) {
+            for (int j = 0; j < ld.size(); j++) 
+            {
                 boolean overlaps = false;
                 ABCJoinTuple r1 = ld.get(j);
                 double oxl = 0, oxr = 0, oyb = 0, oyt = 0;
-             //Case 1 : r2.x1 falls between r1.x1 and r1.x2
-                   System.out.println("CASE 1:Main ");
-                    System.out.println(r2.r3x1 +"<="+ r1.r1x1 +">"+r2.r3x2);
-              
+         //       System.out.println("CASE 1:Main ");
+        //        System.out.println(r2.r3x1 +"<="+ r1.r1x1 +">"+r2.r3x2);
+                //Case 1 : r1.x1 falls between r3.x1 and r3.x2
                 if (r2.r3x1 <= r1.r1x1 && r2.r3x2 > r1.r1x1) 
-                {
-               
-                //    System.out.println("cond 1: if (r1.x1 <= r2.x1 && r1.x2 > r2.x1)-->"+r1.x1+" <="+ r2.x1+ "&&"+ r1.x2+" > "+r2.x1);
-                    // Case 1
+                {   
+                    //Caee 1.1
                     if (r2.r3y1 <= r1.r1y1 && r2.r3y2 > r1.r1y1 && r1.r1y2 > r2.r3y2) 
                     {
-                    //    System.out.println("CASE 1: 1.1 ");
-                    //    System.out.println( "cond 1.1: if (r1.y1 <= r2.y1 && r1.y2 > r2.y1 && r2.y2 > r1.y2)-->"+r1.y1+"<=" +r2.y1+" &&"+ r1.y2+" > "+r2.y1+" &&" +r2.y2+ ">" +r1.y2);
                         overlaps = true;
                         oxl = r1.r1x1;
                         oyb = r1.r1y1;
                         oxr = r2.r3x2;
                         oyt = r2.r3y2;
-                  //      System.out.println("oxl+oyb+oxr+oyt-->"+oxl+oyb+oxr+oyt);
-                    } // Case 2 
+                    } // Case 1.2 
                     else if (r2.r3y1 <= r1.r1y1 && r2.r3y2 > r1.r1y1 && r1.r1y2 <= r2.r3y2) {
                         overlaps = true;
                         oxl = r1.r1x1;
                         oyb = r1.r1y1;
                         oxr = r2.r3x2;
                         oyt = r1.r3y2;
-                    } // Case 3: 
+                    } // Case 1.3: 
                     else if (r2.r3y1 <= r1.r1y2 && r2.r3y2 > r1.r1y2 && r1.r1y1 < r1.r1y1) {
                         overlaps = true;
                         oxl = r1.r1x1;
                         oyb = r2.r3y1;
                         oxr = r2.r3x2;
                         oyt = r1.r1y2;
-                    //    System.out.println("oxl--"+oxl+"oyb--"+oyb+"oxr--"+oxr+"oyt--"+oyt);
-                    } //Case 4:
+                    } //Case 1.4:
                     else if (r2.r3y2 < r1.r1y2 && r1.r1y1 < r2.r3y1) 
                     {
                         overlaps = true;
@@ -117,90 +98,101 @@ public class RectangleReducerSeqCD extends Reducer<LongWritable, ABCJoinTuple, L
                         oyb = r2.r3y1;
                         oxr = r2.r3x2;
                         oyt = r2.r3y2;
-                     //   System.out.println("oxl--"+oxl+"oyb--"+oyb+"oxr--"+oxr+"oyt--"+oyt);
-                    } // Case 2: r2.x1 is less than r1.x1
-                      //  r2.x2 is between r1.x1 and r1.x2
-                }    
+                    } 
+                }
+                // Case 2: r1.x2 is less than r3.x2 and r1.x2 is greaterThan r3.x2
                 else if (r2.r3x1 <= r1.r1x2 && r2.r3x2 > r1.r1x2) 
-                {
-                   
+                {       
+                    //case 2.1:
                         if (r2.r3y1 <= r1.r1y1 && r2.r3y2 > r1.r1y1 && r1.r1y2 > r2.r3y2) {
                             overlaps = true;
                             oxl = r2.r3x1;
                             oyb = r1.r1y1;
                             oxr = r1.r1x2;
                             oyt = r2.r3y2;
-                        } else if (r2.r3y1 <= r1.r1y1 && r2.r3y2 > r1.r1y1 && r1.r1y2 <= r2.r3y2) {
+                        }//case 2.2
+                        else if (r2.r3y1 <= r1.r1y1 && r2.r3y2 > r1.r1y1 && r1.r1y2 <= r2.r3y2) {
                             overlaps = true;
                             oxl = r2.r3x1;
                             oyb = r1.r1y1;
                             oxr = r1.r1x2;
                             oyt = r1.r1y2;
-                        } // Case 2b: r2.y2 falls between r1.y1 and r1.y2
+                        } // Case 2.3: r2.y2 falls between r1.y1 and r1.y2
                         else if (r2.r3y1 <= r1.r1y2 && r2.r3y2 > r1.r1y2 && r1.r1y1 < r2.r3y1) {
                             overlaps = true;
                             oxl = r2.r3x1;
                             oyb = r2.r3y1;
                             oxr = r1.r1x2;
                             oyt = r1.r1y2;
-                        } else if (r1.r1y1 < r2.r3y1 && r1.r1y2 > r2.r3y1) {
+                        }//case 2.4:
+                        else if (r1.r1y1 < r2.r3y1 && r1.r1y2 > r2.r3y1) {
                             overlaps = true;
                             oxl = r2.r3x1;
                             oyb = r2.r3y1;
                             oxr = r1.r1x2;
                             oyt = r2.r3y2;
                         }
-                } else if (r1.r1x1 < r2.r3x1 && r1.r1x2 > r2.r3x2) {
+                } 
+                //Case 3:
+                else if (r1.r1x1 < r2.r3x1 && r1.r1x2 > r2.r3x2) 
+                {
+                    //case 3.1
                         if (r2.r3y1 <= r1.r1y1 && r2.r3y2 > r1.r1y1 && r1.r1y2 > r2.r3y2) {
                             overlaps = true;
                             oxl = r2.r3x1;
                             oyb = r1.r1y1;
                             oxr = r2.r3x2;
                             oyt = r2.r3y2;
-                        } else if (r2.r3y1 <= r1.r1y1 && r2.r3y2 > r1.r1y1 && r1.r1y2 <= r2.r3y2) {
+                        }//case 3.2
+                        else if (r2.r3y1 <= r1.r1y1 && r2.r3y2 > r1.r1y1 && r1.r1y2 <= r2.r3y2) {
                             overlaps = true;
                             oxl = r2.r3x1;
                             oyb = r1.r1y1;
                             oxr = r2.r3x2;
                             oyt = r1.r1y2;
-                        } // Case 2b: r2.y2 falls between r1.y1 and r1.y2
+                        } // Case 3.3: r2.y2 falls between r1.y1 and r1.y2
                         else if (r2.r3y1 <= r1.r1y2 && r2.r3y2 > r1.r1y2 && r1.r1y1 < r2.r3y1) {
                             overlaps = true;
                             oxl = r2.r3x1;
                             oyb = r2.r3y1;
                             oxr = r2.r3x2;
                             oyt = r1.r1y2;
-                        } else if (r1.r1y1 < r2.r3y1 && r1.r1y2 > r2.r3y1) 
-                        {
+                        }//case 3.4
+                        else if (r1.r1y1 < r2.r3y1 && r1.r1y2 > r2.r3y1) {
                             overlaps = true;
                             oxl = r2.r3x1;
                             oyb = r2.r3y1;
                             oxr = r2.r3x2;
                             oyt = r2.r3y2;
                        }
-                    }
-                System.out.println("-------------No Overlap found-----------");
-                    if (overlaps) {// output it to the reducer
-                        // if mid point of the overlap region lies in the current cell area then compute the 
-                        // join tuple otherwise forget
-                      //  System.out.println("\n\nr1.x1+r1.y1+r1.x2+r1.y2+r2.x1+r2.y1+r2.x2+r2.y2-->"+ r1.x1+","+r1.y1+",\t"+r1.x2+","+r1.y2+",\n"+r2.x1+","+r2.y1+",\t"+r2.x2+","+r2.y2);
+                }
+                if (overlaps) 
+                {
+            //            System.out.println("*******OverLAp Found***********");
+            //            System.out.println("oxl +\",\"+ oxr +\" +\"\\t\"+oyb+\",\"+\",\"+oyt"+oxl +","+ oxr +"\t"+oyb+","+","+oyt);
+                        
                         double midx = (oxl+oxr)/2;
-                      //  System.out.println("\n\nmidx= oxl+oxr/2 \t oxl+\",\"+oxr/2+\",\"+midx-->"+oxl+","+oxr/2+","+midx);
                         double midy = (oyb+oyt)/2;
-                     //   System.out.println("\n\nmidy = oyb+oyt/2 \t oyb+\",\"+oyt/2+\",\"+midy-->"+oyb+","+oyt/2+","+midy);
+            //            System.out.println("Mid POints"+midx+","+midy);
                         int x = 1;
-                        if(midx>cellRect.x1 && midx <cellRect.x2 && midy>cellRect.y1 && midy<cellRect.y2){
-                     //   System.out.println("\n\nif(midx>cellRect.x1 && midx <cellRect.x2 && midy>cellRect.y1 && midy<cellRect.y2)\n");
-                      //  System.out.println("\n\nif--cellRect"+cellRect);
-                        System.out.println("\n\nif--Cell Number " + CellNumber);
+             //           System.out.println((midx+">="+cellRect.x1 +"&&"+ midx +"<="+cellRect.x2 +"&&"+ midy+">="+cellRect.y1 +"&&"+ midy+"<="+cellRect.y2));
+                        if((midx == cellRect.x1) || (midx == cellRect.x2) || (midy == cellRect.y1) || (midy<cellRect.y2))
+                        {
+                            midx = midx+0.1; midy = midy+0.1;
+                        }
+                        if(midx > cellRect.x1 && midx < cellRect.x2 && midy > cellRect.y1 && midy < cellRect.y2)
+                        {
+                  //          System.out.println("*******MID POINT***********");
                             LongWritable key = new LongWritable(x);
-                            String output =   joinType + "," + r1 + "," + r2;
-                          //  System.out.println("\n\nif output is-->"+"\t"+output);
+                            String output = r1.r1x1+ "," +r2.r1y1+ "," +r2.r1x2+ "," +r2.r1y2+ "\t" +r2.r2x1+ "," +r2.r2y1+ "," +r2.r2x2+ "," +r2.r2y2+ "\t" +r2.r3x1+ "," +r2.r3y1+ "," +r2.r3x2+ "," +r2.r3y2+ "\t" +r1.r1x1+ "," +r1.r1y1+ "," +r1.r1x2+ "," +r1.r1y2;
                             Text Result = new Text(output);
+                //            System.out.println(Result);
                             context.write(key, Result);   
                         }
                     }
-                
+                else{
+             //            System.out.println("*******OverLAp NOT Found***********");
+                }
             }
         }
     }

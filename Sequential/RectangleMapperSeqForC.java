@@ -1,6 +1,5 @@
 package Sequential;
 
-import EMSpatialJoin.*;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
@@ -30,9 +29,7 @@ public class RectangleMapperSeqForC extends Mapper<LongWritable, Text, LongWrita
         
         Configuration conf = context.getConfiguration();   
         int max = conf.getInt("gridMax",0);
-        //  System.out.println("max is--:"+max);
         int numOfReducersPerRow = conf.getInt("p1NumOfReducersPerRow", 0);
-        // System.out.println("numOfReducers:--"+numOfReducersPerRow);
         double cellWidth =  (double) max / numOfReducersPerRow;
         double cellHeight =  (double) max / numOfReducersPerRow;
         
@@ -50,7 +47,7 @@ public class RectangleMapperSeqForC extends Mapper<LongWritable, Text, LongWrita
         for (int j = y1; j <= y2; j++) {
             for (int i = x1; i <= x2; i++) {
                 int mapkey = ((i * numOfReducersPerRow) + j);
-                System.out.println("Mapper2 Reducer " + mapkey + " " + i + " " + j + " " + r.toString());
+       //         System.out.println("MapperC----->" + mapkey  + " \t " + jointuple);
                 context.write(new LongWritable(mapkey), jointuple);
             }
         }

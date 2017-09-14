@@ -1,30 +1,27 @@
 package Sequential;
-
-//import EMSpatialJoin.*;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-
-public class RectangleMapperSeqForA extends Mapper<LongWritable, Text, LongWritable, RectangleSeq> {
-
-    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+public class RectangleMapperSeqForA extends Mapper<LongWritable, Text, LongWritable, RectangleSeq> 
+{
+    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException 
+    {
         Configuration conf = context.getConfiguration();
-      
+        
         int max = conf.getInt("gridMax",0);
-        //  System.out.println("max is--:"+max);
         int numOfReducersPerRow = conf.getInt("p1NumOfReducersPerRow", 0);
-        //  System.out.println("numOfReducers:--"+numOfReducersPerRow);
         double cellWidth =  (double) max / numOfReducersPerRow;
         double cellHeight =  (double) max / numOfReducersPerRow;
-
+        
         String[] line = value.toString().trim().split(",");
-
         double[] x = {Double.parseDouble(line[2]), Double.parseDouble(line[4])};
         double[] y = {Double.parseDouble(line[3]), Double.parseDouble(line[5])};
         int relation = 0;
-        if (line[1].equals("A")) {
+        
+        if (line[1].equals("A")) 
+        {
             relation = 1;
         }
         RectangleSeq r = new RectangleSeq(Integer.parseInt(line[0]), relation, x[0], y[0], x[1], y[1]);
@@ -37,7 +34,7 @@ public class RectangleMapperSeqForA extends Mapper<LongWritable, Text, LongWrita
         for (int j = y1; j <= y2; j++) {
             for (int i = x1; i <= x2; i++) {
                 int mapkey = ((i * numOfReducersPerRow) + j);
-            //    System.out.println("Mapper1 Reducer " + mapkey + " " + i + " " + j + " " + r.toString());
+          //      System.out.println("MapperA ReducerAB ------->" + mapkey + " \t" + r.toString());
                 context.write(new LongWritable(mapkey), r);
             }
         }

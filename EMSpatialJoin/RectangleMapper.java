@@ -12,9 +12,9 @@ public class RectangleMapper extends Mapper<LongWritable, Text, LongWritable, Re
         Configuration conf = context.getConfiguration();
       
         int max = conf.getInt("gridMax",0);
-          System.out.println("max is--:"+max);
+        //  System.out.println("max is--:"+max);
         int numOfReducersPerRow = conf.getInt("p1NumOfReducersPerRow", 0);
-          System.out.println("numOfReducers:--"+numOfReducersPerRow);
+        //  System.out.println("numOfReducers:--"+numOfReducersPerRow);
         double cellWidth =  (double) max / numOfReducersPerRow;
         double cellHeight =  (double) max / numOfReducersPerRow;
 
@@ -45,7 +45,7 @@ public class RectangleMapper extends Mapper<LongWritable, Text, LongWritable, Re
         for (int j = y1; j <= y2; j++) {
             for (int i = x1; i <= x2; i++) {
                 int mapkey = ((i * numOfReducersPerRow) + j);
-                System.out.println("Mapper1 Reducer " + mapkey + " " + i + " " + j + " " + r.toString());
+          //      System.out.println("Mapper1 Reducer " + mapkey + " " + i + " " + j + " " + r.toString());
                 context.write(new LongWritable(mapkey), r);
             }
         }

@@ -15,7 +15,7 @@ public class RectangleMapperTwo extends Mapper<LongWritable, Text,LongWritable ,
 		int TotalNumofReducers=9;
 		int reducersPerRow = 3;
 		int reducersPerCol =3;
-			   System.out.println("Map" + value.toString());
+			//   System.out.println("Map" + value.toString());
 			   String words[] = value.toString().split(",");
 			   String[] subWords = words[0].split("\\s+");
 			   
@@ -38,7 +38,7 @@ public class RectangleMapperTwo extends Mapper<LongWritable, Text,LongWritable ,
 			   double y22 = Double.parseDouble(words[12]);
 			   //Rectangle R2 = new Rectangle(rowNum2, relationIndex2,x21,y21,x22,y22);
 			   JoinTuple jointuple = new JoinTuple(JoinType,rowNum1,relationIndex1,x11,y11,x12,y12,rowNum2,relationIndex2,x21,y21,x22,y22);
-			   System.out.println("Before Red2" + jointuple.toString());
+			 //  System.out.println("Before Red2" + jointuple.toString());
 			   
 				if(JoinType==1) {
 					//int numBTuples = Integer.parseInt(context.getConfiguration().get("BCount"));
@@ -47,7 +47,7 @@ public class RectangleMapperTwo extends Mapper<LongWritable, Text,LongWritable ,
 					for(int i=0;i<reducersPerRow;i++)
 					{
 						int reducerIndex=(reducerRow*reducersPerRow)+i;
-						System.out.println("Writing "+ jointuple.toString() + " to "+ reducerIndex);
+			//			System.out.println("Writing "+ jointuple.toString() + " to "+ reducerIndex);
 						context.write(new LongWritable(reducerIndex),jointuple);
 					}
 				}
@@ -59,7 +59,7 @@ public class RectangleMapperTwo extends Mapper<LongWritable, Text,LongWritable ,
 					int reducerCol=rowNum2%reducersPerRow;
 					
 					int reducerIndex=(reducerRow*reducersPerRow)+reducerCol;
-					System.out.println("Writing "+ jointuple.toString() + " to "+ reducerIndex);
+			//		System.out.println("Writing "+ jointuple.toString() + " to "+ reducerIndex);
 					context.write(new LongWritable(reducerIndex),jointuple);
 				}
 				else if(JoinType==3) {
@@ -67,7 +67,7 @@ public class RectangleMapperTwo extends Mapper<LongWritable, Text,LongWritable ,
 					for(int i=0;i<reducersPerCol;i++)
 					{
                                             int reducerIndex=(reducersPerRow*i)+reducerCol;
-                                            System.out.println("Writing "+ jointuple.toString() + " to "+ reducerIndex);
+                          //                  System.out.println("Writing "+ jointuple.toString() + " to "+ reducerIndex);
                                             context.write(new LongWritable(reducerIndex),jointuple);
 					}
 				}

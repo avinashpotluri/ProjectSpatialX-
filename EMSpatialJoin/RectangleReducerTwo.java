@@ -18,7 +18,7 @@ public class RectangleReducerTwo extends Reducer<LongWritable,JoinTuple,LongWrit
 
             for(JoinTuple jt:value)
             {
-                System.out.println(jt.toString());
+           //     System.out.println(jt.toString());
                 JoinTuple t = new JoinTuple(jt);
                     if(t.JoinType==1) {
                         lab.add(t);
@@ -30,12 +30,12 @@ public class RectangleReducerTwo extends Reducer<LongWritable,JoinTuple,LongWrit
                         lcd.add(t);
                     }
             }
-            for(int i=0;i<lab.size();i++)
-            System.out.println("AB--" + lab.get(i).toString());
-            for(int i=0;i<lbc.size();i++)
-            System.out.println("BC--" + lbc.get(i).toString());
-            for(int i=0;i<lcd.size();i++)
-            System.out.println("CD--" + lcd.get(i).toString());
+        //    for(int i=0;i<lab.size();i++)
+          //  System.out.println("AB--" + lab.get(i).toString());
+         //   for(int i=0;i<lbc.size();i++)
+          //  System.out.println("BC--" + lbc.get(i).toString());
+         //   for(int i=0;i<lcd.size();i++)
+          //  System.out.println("CD--" + lcd.get(i).toString());
 	    	
 	    for(int i=0;i<lbc.size();i++) {
 		JoinTuple lbcTuple = lbc.get(i);
@@ -51,7 +51,7 @@ public class RectangleReducerTwo extends Reducer<LongWritable,JoinTuple,LongWrit
                                    lbcTuple.r2RowNum + "," + lcdTuple.r2RowNum;
 		    						//key=new LongWritable(x);
 		    			Text Result=new Text(output);
-		    			System.out.println(output);
+	//	    			System.out.println(output);
 		    			context.write(key, Result);
 		    						
 		    			}
